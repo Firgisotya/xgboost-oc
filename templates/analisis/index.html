@@ -1,0 +1,116 @@
+{% extends 'layouts/main.html' %} {% block content %}
+<!--  Row 1 -->
+<div class="row">
+  <h1>Analisis</h1>
+</div>
+<div class="card">
+  <div class="card-body">
+    <form action="/analisis" method="post" enctype="multipart/form-data">
+      <div class="form-group mx-auto" style="max-width: 400px;">
+        <button type="button" class="btn btn-gray w-100 rounded-sm btn-md" data-toggle="modal"
+          data-target="#selectModel">Pilih Model</button>
+        <!-- modal -->
+        <div class="modal fade" id="selectModel" tabindex="-1" aria-labelledby="selectModelLabel"
+          aria-hidden="true">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="selectModelLabel">Pilih Model</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <p>
+                  Pilih model yang akan digunakan untuk mendeteksi anomali pada data. model yang dipilih adalah
+                  model yang telah dilatih sebelumnya menggunakan algoritma <em>Isolation Forest</em> yang di
+                  optimasi dengan <em>Genetic Algorithm</em>.
+                </p>
+                <div class="table-responsive" id="data" style="display: none;">
+                  <table class="table text-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="text-center">ID</th>
+                        <th scope="col" class="text-center">Learning Rate</th>
+                        <th scope="col" class="text-center">Max Depth</th>
+                        <th scope="col" class="text-center">Minimum Split Loss</th>
+                        <th scope="col" class="text-center">Number of Estimators</th>
+                        <th scope="col" class="text-center">Mape</th>
+                        <th scope="col" class="text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in hst_best_param %}
+                      <tr>
+                        <td class="text-center">
+                          {{ row.id }}
+                        </td>
+                        <td class="text-center">{{ row.learning_rate }}</td>
+                        <td class="text-center">{{ row.max_depth }}</td>
+                        <td class="text-center">{{ row.min_split_loss }}</td>
+                        <td class="text-center">{{ row.n_estimators }}</td>
+                        <td class="text-center">{{ row.mape }}</td>
+                        <td>
+                          <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"
+                            onclick="selectModel('{{ row.id }}')">Pilih</button>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-group mx-auto mt-3" style="max-width: 400px;">
+        <!-- read only from select model -->
+        <input type="text" class="form-control" id="model" name="model" placeholder="Model" readonly required>
+      </div>
+      <div class="form-group mx-auto mt-3" style="max-width: 400px;">
+        <small id="alert" class="form-text text-danger" style="display: none;">Format anda belum sesuai! </small>
+        <div class="custom-file">
+          <input type="file" class="custom-file-input text-start" id="data_uji" name="data_uji" required>
+          <label class="custom-file-label" for="data_uji">Unggah file</label>
+          <!-- Format dokumen -->
+          <small id="formatDokumen" class="form-text text-muted">Format dokumen yang diterima: .csv | .xlsx | xlsm
+          </small>
+        </div>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary btn-md">Proses Deteksi</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+ {% endblock content %}
+
+ {% block scripts %}
+ 
+ <script>
+  function selectModel(id) {
+    var model = document.getElementById('model');
+    model.value = id;
+  }
+
+  document.getElementById('data_uji').addEventListener('change', function () {
+    var fileName = this.value;
+    var allowedExtensions = /(\.csv|\.xlsx|\.xlsm)$/i; // Ekstensi file yang diizinkan
+    var label = document.querySelector('.custom-file-label');
+    var errorMessage = document.getElementById('alert');
+
+    if (!allowedExtensions.exec(fileName)) {
+      label.innerHTML = 'Unggah file'; // MengembaliselectModelkan label ke teks awal
+      label.style.borderColor = 'red'; // Mengubah warna border menjadi merah
+      errorMessage.style.display = 'block'; // Menampilkan pesan error
+      this.value = ''; // Mengosongkan input file
+    } else {
+      label.innerHTML = fileName.split('\\').pop(); // Mengganti teks label dengan nama file
+      label.style.borderColor = ''; // Mengembalikan warna border ke default
+      errorMessage.style.display = 'none'; // Menyembunyikan pesan error
+    }
+  });
+</script>
+ {% endblock %}

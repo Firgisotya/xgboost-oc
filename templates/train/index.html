@@ -1,0 +1,114 @@
+{% extends 'layouts/main.html' %}
+
+{% block content %}
+<!-- Row 1 -->
+<div class="row">
+  <h1>Train Model</h1>
+</div>
+
+<!-- Card Section -->
+<div class="card">
+  <div class="card-body">
+    <div class="row justify-content-center">
+      <div class="col">
+        <form action="/latih-model" method="post" enctype="multipart/form-data">
+          <!-- First row of form inputs -->
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label for="learning_rate">Learning Rate</label>
+              <input
+                type="text"
+                class="form-control"
+                id="learning_rate"
+                name="learning_rate"
+                required
+                readonly
+                value="{{ data.learning_rate }}"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="max_depth">Max Depth</label>
+              <input
+                type="number"
+                class="form-control"
+                id="max_depth"
+                name="max_depth"
+                required
+                value="{{ data.max_depth }}"
+              />
+            </div>
+          </div>
+          <!-- Second row of form inputs -->
+          <div class="form-group row">
+            <div class="col-md-6">
+              <label for="n_estimators">Number of Estimators</label>
+              <input
+                type="number"
+                class="form-control"
+                id="n_estimators"
+                name="n_estimators"
+                required
+                value="{{ data.n_estimators }}"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="min_split_loss">Minimum Split Loss (gamma)</label>
+              <input
+                type="number"
+                class="form-control"
+                id="min_split_loss"
+                name="min_split_loss"
+                required
+                value="{{ data.min_split_loss }}"
+              />
+            </div>
+          </div>
+          <!-- Submit button -->
+          <div class="form-group row mt-5">
+            <div class="col text-center">
+              <button type="submit" class="btn btn-primary">Mulai latih</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- hasil train model -->
+<div class="card mt-5">
+  <div class="card-body">
+    <div class="row justify-content-center">
+      <div class="col">
+        <h2>Hasil Train Model</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Learning Rate</th>
+              <th>Max Depth</th>
+              <th>Number of Estimators</th>
+              <th>Minimum Split Loss (gamma)</th>
+              <th>MAPE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if optimized_params %}
+            <tr>
+              <td>{{ optimized_params.best_params_.learning_rate }}</td>
+              <td>{{ optimized_params.best_params_.max_depth }}</td>
+              <td>{{ optimized_params.best_params_.n_estimators }}</td>
+              <td>{{ optimized_params.best_params_.min_split_loss }}</td>
+              <td>{{ mape }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center">No results to display</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}

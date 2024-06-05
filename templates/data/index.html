@@ -1,0 +1,36 @@
+{% extends 'layouts/main.html' %}
+
+{% block content %}
+<!--  Row 1 -->
+<div class="row">
+    <h1>Data</h1>
+</div>
+<table id="dataTable" class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tanggal</th>
+            <th>Lotno</th>
+            <th>Prod Order</th>
+            <th>Value</th>
+            <th>Temp Mini Tank</th>
+            <th>Temp Nozzle</th>
+            <th>Temp Nozzle Filler</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in data %}
+        <tr>
+            <td>{{ row['tanggal'] }}</td>
+            <td>{{ row['lotno2'] }}</td>
+            <td>{{ row['prod_order2'] }}</td>
+            <td>{{ row['value'] }}</td>
+            <td>{{ row['temp_mini_tank'] }}</td>
+            <td>{{ row['temp_nozzle'] }}</td>
+            <td>{{ row['temp_nozzle_filler'] }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock content %}
+

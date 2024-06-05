@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Modernize Free</title>
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{{ url_for('static', filename='assets/images/logos/favicon.png') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='assets/css/styles.min.css') }}"
+    />
+
+    <!-- Include DataTables CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css"
+    />
+  </head>
+
+  <style>
+    * Loading Spinner */
+/* CSS untuk animasi loading */
+.loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 9999;
+}
+
+.loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Tambahan */
+  margin-top: -25px; /* Setengah dari tinggi elemen */
+  margin-left: -25px; /* Setengah dari lebar elemen */
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+    </style>
+
+  <body>
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-spinner"></div>
+    </div>
+    <!--  Body Wrapper -->
+    <div
+      class="page-wrapper"
+      id="main-wrapper"
+      data-layout="vertical"
+      data-navbarbg="skin6"
+      data-sidebartype="full"
+      data-sidebar-position="fixed"
+      data-header-position="fixed"
+    >
+      <!-- Sidebar Start -->
+      {% include 'layouts/sidebar.html' %}
+      <!--  Sidebar End -->
+      <!--  Main wrapper -->
+      <div class="body-wrapper">
+        <!--  Header Start -->
+        {% include 'layouts/navbar.html' %}
+        <!--  Header End -->
+        <div class="container-fluid">
+          {% block content %} {% endblock %} {% include 'layouts/footer.html' %}
+        </div>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='assets/libs/jquery/dist/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/sidebarmenu.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/app.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='assets/js/dashboard.js') }}"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.bootstrap5.js"></script>
+    {% block scripts %}{% endblock %}
+
+    <script>
+      // script.js
+      document.addEventListener('DOMContentLoaded', function() {
+        var loadingOverlay = document.getElementById('loadingOverlay');
+        var data = document.getElementById('data');
+  
+        // Tampilkan loading overlay saat halaman dimuat
+        loadingOverlay.style.display = 'block';
+  
+        // Semua sumber daya telah dimuat, sembunyikan loading overlay dan tampilkan data
+        window.addEventListener('load', function() {
+            loadingOverlay.style.display = 'none';
+            data.style.display = 'block';
+        });
+      });
+  
+      document.getElementById("form-post").addEventListener("submit", function() {
+        document.getElementById("loadingOverlay").style.display = "block";
+      });
+    </script>
+    
+    <script>
+      new DataTable('#dataTable');
+    </script>
+  </body>
+</html>
