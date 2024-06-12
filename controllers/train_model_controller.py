@@ -10,72 +10,77 @@ from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.metrics import mean_absolute_percentage_error
 from models.hst_best_param_model import HstBestParamModel
 from helpers.util_helper import generate_random_string
+from helpers.preprocessing_helper import PreprocessingHelper
 
 class TrainModelController:
     def __init__(self):
         self.hstBestParam = HstBestParamModel()
-
-    def load_train_dataset(self):
-        file_path = os.path.join('static', 'dataset', 'data_hour_2023.csv')
-        return pd.read_csv(file_path)
-    
-    def load_dataset(self):
-        data = self.load_train_dataset()
-        data['tanggal'] = pd.to_datetime(data['tanggal'])
-        data.set_index('tanggal', inplace=True)
-        data.dropna(inplace=True)
-        data.drop(['prod_order2', 'lotno2'], axis=1, inplace=True)
-        X = data.drop('value', axis=1)
-        y = data['value']
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        return X_train, X_test, y_train, y_test
+        self.preprocessing_helper = PreprocessingHelper()
     
     def index(self):
         try:
-            data = {
-                'learning_rate': 0.1,
-                'max_depth': 15,
-                'n_estimators': 600,
-                'min_split_loss': 3
-            }
+            booster_options = ['gbtree', 'gblinear'],
+            learning_rate_options = [0.1, 0.01, 0.001, 0.5]
+            max_depth_options = [2, 3, 4, 5, 6, 7, 10, 12, 15, 20]
+            n_estimators_options = [100, 250, 300, 400, 500, 600, 1000]
+            min_split_loss_options = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 1.5, 2, 3],
+            colsample_bytree_options = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            subsample_options = [0.2, 0.4, 0.5, 0.6, 0.7],
+            reg_alpha_options = [0, 0.2, 0.5, 1],
+            reg_lambda_options = [1, 1.5, 2, 3, 4.5, 5],
+            min_child_weight_options = [1, 3, 5, 7, 10, 15, 20, 25],
 
             mape = None
             optimized_params = None
 
             if request.method == 'POST':
                 try:
-                    print(request.form)
-                    data['learning_rate'] = float(request.form['learning_rate'])
-                    data['max_depth'] = int(request.form['max_depth'])
-                    data['n_estimators'] = int(request.form['n_estimators'])
-                    data['min_split_loss'] = int(request.form['min_split_loss'])
 
                     param_distributions = {
-                        'learning_rate': [data['learning_rate']],
-                        'max_depth': [data['max_depth']],
-                        'n_estimators': [data['n_estimators']],
-                        'min_split_loss': [data['min_split_loss']]
+                        'booster': booster_options,
+                        'learning_rate': learning_rate_options,
+                        'max_depth': max_depth_options,
+                        'n_estimators': n_estimators_options,
+                        'min_split_loss': min_split_loss_options,
+                        'colsample_bytree': colsample_bytree_options,
+                        'subsample': subsample_options,
+                        'reg_alpha': reg_alpha_options,
+                        'reg_lambda': reg_lambda_options,
+                        'min_child_weight': min_child_weight_options
                     }
 
-                    X_train, X_test, y_train, y_test = self.load_dataset()
+                    X_train, X_test, y_train, y_test = self.preprocessing_helper.load_dataset()
                     optimized_params = RandomizedSearchCV(
                         xgb.XGBRegressor(),
-                        param_distributions=param_distributions,
+                        param_distributions,
                         n_iter=10,
-                        cv=5,
                         n_jobs=-1,
-                        verbose=3,
-                        error_score='raise'
+                        cv=5,
+                        verbose=3
                     )
-                    optimized_params.fit(X_train, y_train)
+                    optimized_params.fit(
+                        X_train, 
+                        y_train,
+                        early_stopping_rounds=10,
+                        eval_set=[(X_test, y_test)],
+                        verbose=False
+                        )
+                    
+                    print(f'Best params: {optimized_params.best_params_}')
+
                     model = xgb.XGBRegressor(
                         objective='reg:squarederror',
-                        booster='gbtree',
+                        booster=optimized_params.best_params_['booster'],
                         eval_metric='mae',
                         learning_rate=optimized_params.best_params_['learning_rate'],
                         max_depth=optimized_params.best_params_['max_depth'],
                         n_estimators=optimized_params.best_params_['n_estimators'],
-                        min_split_loss=optimized_params.best_params_['min_split_loss']
+                        min_split_loss=optimized_params.best_params_['min_split_loss'],
+                        colsample_bytree=optimized_params.best_params_['colsample_bytree'],
+                        subsample=optimized_params.best_params_['subsample'],
+                        reg_alpha=optimized_params.best_params_['reg_alpha'],
+                        reg_lambda=optimized_params.best_params_['reg_lambda'],
+                        min_child_weight=optimized_params.best_params_['min_child_weight']
                     )
                     model.fit(X_train, y_train)
                     y_pred = model.predict(X_test)
@@ -83,19 +88,21 @@ class TrainModelController:
                     mape = round(mape, 3)
                     print(f'MAPE: {mape}')
 
-                    self.hstBestParam.create({
-                        'learning_rate': optimized_params.best_params_['learning_rate'],
-                        'max_depth': optimized_params.best_params_['max_depth'],
-                        'n_estimators': optimized_params.best_params_['n_estimators'],
-                        'min_split_loss': optimized_params.best_params_['min_split_loss'],
-                        'mape': mape
-                    })
+                    # self.hstBestParam.create({
+                    #     'id': generate_random_string(5),
+                    #     'learning_rate': optimized_params.best_params_['learning_rate'],
+                    #     'max_depth': optimized_params.best_params_['max_depth'],
+                    #     'n_estimators': optimized_params.best_params_['n_estimators'],
+                    #     'min_split_loss': optimized_params.best_params_['min_split_loss'],
+                    #     'mape': mape
+                    # })
+
                 except Exception as e:
                     print(e)
                     flash('There was an error processing the form. Please check your input values.')
                     return redirect('/latih-model')
 
-            return render_template('train/index.html', data=data, optimized_params=optimized_params, mape=mape)
+            return render_template('train/index.html', optimized_params=optimized_params, mape=mape)
 
         except Exception as e:
             print(f"Error in index method: {e}")

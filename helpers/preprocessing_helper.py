@@ -10,12 +10,14 @@ class PreprocessingHelper:
 
     # load train data
     def load_data_train(self):
-        file_path = os.path.join('dataset', 'data_hour_2023')
+        file_path = os.path.join('static', 'dataset', 'data_hour_2023.csv')
         return pd.read_csv(file_path)
     
     # drop kolom yang tidak diperlukan
-    def load_dataset (self):
+    def load_dataset(self):
         data = self.load_data_train()
+        data['tanggal'] = pd.to_datetime(data['tanggal'])
+        data.set_index('tanggal', inplace=True)
         data.dropna(inplace=True)
         data.drop(['prod_order2', 'lotno2'], axis=1, inplace=True)
         X = data.drop('value', axis=1)
