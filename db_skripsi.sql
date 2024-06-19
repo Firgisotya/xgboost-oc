@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 06, 2024 at 07:20 AM
+-- Generation Time: Jun 19, 2024 at 04:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -7452,11 +7452,18 @@ INSERT INTO `data_hour_2023` (`tanggal`, `lotno2`, `prod_order2`, `value`, `temp
 --
 
 CREATE TABLE `hst_best_params` (
-  `id` int(11) NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `objective` varchar(100) NOT NULL,
+  `booster` varchar(100) NOT NULL,
   `learning_rate` float NOT NULL,
-  `min_split_loss` float NOT NULL,
-  `max_depth` float NOT NULL,
-  `n_estimators` float NOT NULL,
+  `gamma` float NOT NULL,
+  `max_depth` int(11) NOT NULL,
+  `n_estimators` int(11) NOT NULL,
+  `colsample_bytree` float NOT NULL,
+  `subsample` float NOT NULL,
+  `reg_alpha` float NOT NULL,
+  `reg_lambda` float NOT NULL,
+  `min_child_weight` int(11) NOT NULL,
   `mape` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -7464,12 +7471,9 @@ CREATE TABLE `hst_best_params` (
 -- Dumping data for table `hst_best_params`
 --
 
-INSERT INTO `hst_best_params` (`id`, `learning_rate`, `min_split_loss`, `max_depth`, `n_estimators`, `mape`) VALUES
-(2, 0.1, 3, 15, 600, 0.04),
-(5, 0.1, 3, 15, 800, 0.04),
-(6, 0.1, 10, 10, 1000, 0.04),
-(7, 0.1, 10, 10, 1000, 0.037),
-(8, 0.1, 3, 15, 600, 0.038);
+INSERT INTO `hst_best_params` (`id`, `objective`, `booster`, `learning_rate`, `gamma`, `max_depth`, `n_estimators`, `colsample_bytree`, `subsample`, `reg_alpha`, `reg_lambda`, `min_child_weight`, `mape`) VALUES
+('JE4xb', 'reg:squarederror', 'gbtree', 0.1, 0.2, 5, 1000, 0.8, 0.5, 0.2, 1, 7, 0.047),
+('zs2LZ', 'reg:squarederror', 'gbtree', 0.1, 1.5, 20, 300, 0.9, 0.5, 0.5, 5, 15, 0.036);
 
 -- --------------------------------------------------------
 
@@ -18325,17 +18329,7 @@ INSERT INTO `tmp_data` (`tanggal`, `lotno2`, `prod_order2`, `value`, `temp_h1`, 
 -- Indexes for table `hst_best_params`
 --
 ALTER TABLE `hst_best_params`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `hst_best_params`
---
-ALTER TABLE `hst_best_params`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  ADD UNIQUE KEY `primary_key` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

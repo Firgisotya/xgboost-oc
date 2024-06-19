@@ -4,7 +4,7 @@
 <!-- Row 1 -->
 <div class="row">
   <div class="col">
-    <h1>Train Model</h1>
+    <h1>Latih Model</h1>
   </div>
 </div>
 
@@ -13,7 +13,7 @@
   <div class="card-body">
     <div class="row justify-content-center">
       <div class="col">
-        <form action="/latih-model" method="post" enctype="multipart/form-data">
+        <form id="form-post" action="/latih-model" method="post" enctype="multipart/form-data">
           
           <!-- Submit button -->
           <div class="form-group row mt-4">
@@ -32,14 +32,19 @@
   <div class="card-body">
     <div class="row justify-content-center">
       <div class="col">
-        <h2>Hasil Train Model</h2>
+        <h2>Hasil Latih Model</h2>
         <table class="table table-bordered">
           <thead>
             <tr>
               <th>Learning Rate</th>
               <th>Max Depth</th>
               <th>Number of Estimators</th>
-              <th>Minimum Split Loss (gamma)</th>
+              <th>Gamma</th>
+              <th>ColSample Bytree</th>
+              <th>Subsample</th>
+              <th>Reg Alpha</th>
+              <th>Reg Lambda</th>
+              <th>Minimum Child Weight</th>
               <th>MAPE</th>
             </tr>
           </thead>
@@ -49,7 +54,12 @@
               <td>{{ optimized_params.best_params_.learning_rate }}</td>
               <td>{{ optimized_params.best_params_.max_depth }}</td>
               <td>{{ optimized_params.best_params_.n_estimators }}</td>
-              <td>{{ optimized_params.best_params_.min_split_loss }}</td>
+              <td>{{ optimized_params.best_params_.gamma }}</td>
+              <td>{{ optimized_params.best_params_.colsample_bytree }}</td>
+              <td>{{ optimized_params.best_params_.subsample }}</td>
+              <td>{{ optimized_params.best_params_.reg_alpha }}</td>
+              <td>{{ optimized_params.best_params_.reg_lambda }}</td>
+              <td>{{ optimized_params.best_params_.min_child_weight }}</td>
               <td>{{ mape }}</td>
             </tr>
             {% else %}

@@ -33,13 +33,20 @@ class HstBestParamModel:
             if self.connection:
                 with self.connection.cursor() as cursor:
                     cursor.execute(
-                        "INSERT INTO hst_best_params (id, learning_rate, max_depth, n_estimators, min_split_loss, mape) VALUES (%s, %s, %s, %s, %s, %s)",
+                        "INSERT INTO hst_best_params (id, objective, booster, learning_rate, max_depth, n_estimators, gamma, colsample_bytree, subsample, reg_alpha, reg_lambda, min_child_weight, mape) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (
                             data["id"],
+                            data["objective"],
+                            data["booster"],
                             data["learning_rate"],
                             data["max_depth"],
                             data["n_estimators"],
-                            data["min_split_loss"],
+                            data["gamma"],
+                            data["colsample_bytree"],
+                            data["subsample"],
+                            data["reg_alpha"],
+                            data["reg_lambda"],
+                            data["min_child_weight"],
                             data["mape"],
                         ),
                     )

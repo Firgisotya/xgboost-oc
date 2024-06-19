@@ -1,36 +1,47 @@
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import RandomizedSearchCV
 import xgboost as xgb
-import joblib
-from helpers.model_helper import xgboost_model
+from sklearn.model_selection import RandomizedSearchCV
+import warnings
 
-class RandomizedSearch:
-    def __init__(self, model, param_distributions, X_train, X_test, y_train, y_test, n_iter=10, cv=5, n_jobs=-1):
-        self.model = model
-        self.param_distributions = param_distributions
-        self.X_train = X_train
-        self.X_test = X_test
-        self.y_train = y_train
-        self.y_test = y_test
-        self.n_iter = n_iter
-        self.cv = cv
-        self.n_jobs = n_jobs
+param_grid = {
+        "objective": ["reg:squarederror", "reg:linear"],
+        "booster": ["gbtree", "gblinear"],
+        "learning_rate": [0.1, 0.01, 0.001, 0.5],
+        "max_depth": [2, 3, 4, 5, 6, 7, 10, 12, 15, 20],
+        "n_estimators": [100, 250, 300, 400, 500, 600, 1000],
+        "gamma": [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 1, 1.5, 2, 3],
+        "colsample_bytree": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+        "subsample": [0.2, 0.4, 0.5, 0.6, 0.7],
+        "reg_alpha": [0, 0.2, 0.5, 1],
+        "reg_lambda": [1, 1.5, 2, 3, 4.5, 5],
+        "min_child_weight": [1, 3, 5, 7, 10, 15, 20, 25],
+}
 
-    def optimal_params(self):
-        rs = RandomizedSearchCV(
-            self.model,
-            param_distributions=self.param_distributions,
-            n_iter=self.n_iter,
-            cv=self.cv,
-            n_jobs=self.n_jobs
-        )
+class RandomizedSaerchHelper:
+    def __init__(self):
+        pass
 
-        rs.fit(self.X_train, self.y_train)
+    def find_best_params(X_train, y_train, X_test, y_test):
+        try:
+            optimized_params = RandomizedSearchCV(
+                xgb.XGBRegressor(),
+                param_grid,
+                cv=5,
+                n_iter=10,
+                scoring='neg_mean_absolute_error',
+                verbose=3,
+                n_jobs=12
+            )
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                optimized_params.fit(
+                    X_train,
+                    y_train,
+                    early_stopping_rounds=10,
+                    eval_set=[(X_test, y_test)],
+                    verbose=1
+                )
 
-        return rs.best_params_
-    
-    def save_model(self, solution, path):
-        model = xgboost_model(solution, self.X_train)
-        model.fit(self.X_train, self.y_train)
-        joblib.dump(model, path)
+            return optimized_params.best_params_
+        except Exception as e:
+            print(f"Error during hyperparameter tuning: {e}")
+            return None

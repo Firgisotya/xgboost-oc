@@ -3,9 +3,14 @@
 <div class="row">
   <h1>Analisis</h1>
 </div>
-<div class="card">
+<div class="card mt-4">
   <div class="card-body">
-    <form action="/analisis" method="post" enctype="multipart/form-data">
+    <form
+      id="form-post"
+      action="/analisis"
+      method="post"
+      enctype="multipart/form-data"
+    >
       <div class="form-group mx-auto" style="max-width: 400px">
         <!-- Button trigger modal -->
         <button
@@ -43,40 +48,58 @@
                   sebelumnya menggunakan <em>Randomized Search</em>.
                 </p>
                 {% if hst_best_param %}
-                <table class="table table-striped">
-                  <thead class="table-dark">
-                    <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Learning Rate</th>
-                      <th scope="col">Min Split Loss (Gamma)</th>
-                      <th scope="col">Max Depth</th>
-                      <th scope="col">Number of Estimators</th>
-                      <th scope="col">MAPE</th>
-                      <th scope="col">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for row in hst_best_param %}
-                    <tr>
-                      <th scope="row">{{ row[0] }}</th>
-                      <td class="text-center">{{ row[1] }}</td>
-                      <td class="text-center">{{ row[2] }}</td>
-                      <td class="text-center">{{ row[3] }}</td>
-                      <td class="text-center">{{ row[4] }}</td>
-                      <td class="text-center">{{ row[5] }}</td>
-                      <td class="text-center">
-                        <button
-                          type="button"
-                          class="btn btn-primary"
-                          onclick="selectModel('{{ row[0] }}')"
-                          data-bs-dismiss="modal"
-                        >
-                          Pilih
-                        </button>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead class="table-dark">
+                      <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Objective</th>
+                        <th scope="col">Booster</th>
+                        <th scope="col">Learning Rate</th>
+                        <th scope="col">Gamma</th>
+                        <th scope="col">Max Depth</th>
+                        <th scope="col">Number of Estimators</th>
+                        <th scope="col">Colsample Bytree</th>
+                        <th scope="col">Subsample</th>
+                        <th scope="col">Reg Alpha</th>
+                        <th scope="col">Reg Lambda</th>
+                        <th scope="col">Minimum Child Weight</th>
+                        <th scope="col">MAPE</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for row in hst_best_param %}
+                      <tr>
+                        <th scope="row">{{ row[0] }}</th>
+                        <td class="text-center">{{ row[1] }}</td>
+                        <td class="text-center">{{ row[2] }}</td>
+                        <td class="text-center">{{ row[3] }}</td>
+                        <td class="text-center">{{ row[4] }}</td>
+                        <td class="text-center">{{ row[5] }}</td>
+                        <td class="text-center">{{ row[6] }}</td>
+                        <td class="text-center">{{ row[7] }}</td>
+                        <td class="text-center">{{ row[8] }}</td>
+                        <td class="text-center">{{ row[9] }}</td>
+                        <td class="text-center">{{ row[10] }}</td>
+                        <td class="text-center">{{ row[11] }}</td>
+                        <td class="text-center">{{ row[12] }}</td>
+                        <td class="text-center">
+                          <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="selectModel('{{ row[0] }}')"
+                            data-bs-dismiss="modal"
+                          >
+                            Pilih
+                          </button>
+                        </td>
+                      </tr>
+  
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
                 {% else %}
                 <p class="text-center">Tidak ada model yang tersedia</p>
                 {% endif %}
@@ -124,25 +147,57 @@
           <label class="custom-file-label" for="data_uji">Unggah file</label>
           <!-- Format dokumen -->
           <small id="formatDokumen" class="form-text text-muted"
-            >Format dokumen yang diterima: .csv 
+            >Format dokumen yang diterima: .csv
           </small>
         </div>
       </div>
       <div class="text-center">
-        <button type="submit" class="btn btn-success btn-md">
-          Proses
-        </button>
+        <button type="submit" class="btn btn-success btn-md">Proses</button>
       </div>
     </form>
   </div>
 </div>
 
-{% endblock content %} 
+<!-- hasil analisis -->
+<div class="card mt-4">
+  <div class="card-body">
+    <div class="row justify-content-center">
+      <div class="col">
+        <h2>Hasil Analisis</h2>
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Lot Number</th>
+                <th>Production Order</th>
+                <th>Temperature Mini Tank</th>
+                <th>Temperature Nozzle</th>
+                <th>Temperature Nozzle Filler</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if data %}
+              {% for row in data %}
+              {% comment %} <p>{{ row }}</p> {% endcomment %}
+              {% else %}
+              <tr>
+                <td colspan="7" class="text-center">Tidak ada data</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-{% block scripts %}
+{% endblock content %} {% block scripts %}
 <script>
   function selectModel(modelId) {
-    document.getElementById('model').value = modelId;
+    document.getElementById("model").value = modelId;
   }
 </script>
 {% endblock %}

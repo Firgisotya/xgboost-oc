@@ -4,28 +4,34 @@ import numpy as np
 import xgboost as xgb
 
 def xgboost_model(solution):
-    learning_rate, min_split_loss, max_depth, n_estimators = solution
+    objective, booster, learning_rate, max_depth, n_estimators, gamma, subsample, colsample_bytree, reg_alpha, reg_lambda, min_child_weight = solution
 
-    # learning_rate
-    learning_rate = max(0.1, min(0.001, float(learning_rate)))
-
-    # max_depth [7, 10, 15, 20]
-    max_depth = max(20, min(2, int(max_depth)))
-
-    # n_estimators [300, 400, 500, 600]
-    n_estimators = max(1000, min(100, int(n_estimators)))
-
-    # min_split_loss [1, 2, 3]
-    min_split_loss = max(3, min(0.01, float(min_split_loss)))
+    objective = str(objective)
+    booster = str(booster)
+    learning_rate = float(learning_rate)
+    max_depth = int(max_depth)
+    n_estimators = int(n_estimators)
+    gamma = float(gamma)
+    subsample = float(subsample)
+    colsample_bytree = float(colsample_bytree)
+    reg_alpha = float(reg_alpha)
+    reg_lambda = float(reg_lambda)
+    min_child_weight = int(min_child_weight)
+    
 
     model = xgb.XGBRegressor(
-        objective="reg:squarederror",
-        booster="gbtree",
-        eval_metric="mae",
+        objective=objective,
+        booster=booster,
+        eval_metric="rmse",
         learning_rate=learning_rate,
         max_depth=max_depth,
         n_estimators=n_estimators,
-        min_split_loss=min_split_loss
+        gamma=gamma,
+        subsample=subsample,
+        colsample_bytree=colsample_bytree,
+        reg_alpha=reg_alpha,
+        reg_lambda=reg_lambda,
+        min_child_weight=min_child_weight
     )
 
     return model

@@ -1,5 +1,4 @@
-from flask import request, redirect, url_for
-from helper import render, view
+from flask import request, redirect, url_for, render_template
 from config.db import connectdb
 
 class DataController :
@@ -31,5 +30,5 @@ class DataController :
                 print('Failed to connect to database.')
         except Exception as e:
             print(f'Error: {e}')
-        return render(view('data/index'), data=data)
+        return render_template('data/index.html', data=data)
         

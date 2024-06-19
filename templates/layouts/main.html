@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Modernize Free</title>
+    <title>BPD Analisis</title>
     <link
       rel="shortcut icon"
       type="image/png"
@@ -12,6 +12,10 @@
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='assets/css/styles.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='assets/css/main.css') }}"
     />
 
     <!-- Include DataTables CSS -->
@@ -22,39 +26,8 @@
     />
   </head>
 
-  <style>
-    * Loading Spinner */
-/* CSS untuk animasi loading */
-.loading-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.5);
-  z-index: 9999;
-}
-
-.loading-spinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  /* Tambahan */
-  margin-top: -25px; /* Setengah dari tinggi elemen */
-  margin-left: -25px; /* Setengah dari lebar elemen */
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #3498db;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 2s linear infinite;
-}
-    </style>
-
   <body>
-    <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-overlay z-3" id="loadingOverlay">
       <div class="loading-spinner"></div>
     </div>
     <!--  Body Wrapper -->

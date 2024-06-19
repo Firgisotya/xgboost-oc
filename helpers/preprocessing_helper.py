@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-from helpers.rscv_helper import RandomizedSearch
 
 class PreprocessingHelper:
     def __init__(self):
@@ -24,20 +23,6 @@ class PreprocessingHelper:
         y = data['value']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         return X_train, X_test, y_train, y_test
-    
-    def param_distributions(learning_rate, max_depth, n_estimators, min_split_loss):
-        learning_rate = float(learning_rate)
-        max_depth = max(20, min(7, int(max_depth)))
-        n_estimators = max(600, min(300, int(n_estimators)))
-        min_split_loss = max(3, min(1, int(min_split_loss)))
-        return {
-            'learning_rate': [learning_rate],
-            'max_depth': [max_depth],
-            'n_estimators': [n_estimators],
-            'min_split_loss': [min_split_loss]
-        }
        
     
-    def rscv_generator(self, model, param_distributions, X_train, X_test, y_train, y_test):
-        rscv = RandomizedSearch(model, param_distributions, X_train, X_test, y_train, y_test)
-        return rscv
+   
