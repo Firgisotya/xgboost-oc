@@ -4,8 +4,8 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import matplotlib.pyplot as plt
 import warnings
 import xgboost as xgb
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.metrics import mean_absolute_percentage_error
+from sklearn.model_selection import RandomizedSearchCV, cross_val_score
+from sklearn.metrics import mean_absolute_percentage_error, make_scorer
 from models.hst_best_param_model import HstBestParamModel
 from helpers.util_helper import generate_random_string
 from helpers.preprocessing_helper import PreprocessingHelper
@@ -40,12 +40,13 @@ class TrainModelController:
             if request.method == 'POST':
                 try:
                     X_train, X_test, y_train, y_test = self.preprocessing_helper.load_dataset()
+
                     optimized_params = RandomizedSearchCV(
                         xgb.XGBRegressor(),
                         param_grid,
                         cv=5,
                         n_iter=10,
-                        scoring='neg_mean_absolute_error',
+                        scoring='neg_mean_absolute_percentage_error',
                         verbose=3,
                         n_jobs=12
                     )
@@ -58,23 +59,25 @@ class TrainModelController:
                             eval_set=[(X_test, y_test)],
                             verbose=1
                         )
-                    
+
+                
                     if optimized_params is not None:
-                        print(f'Best params: {optimized_params.best_params_}')
+                        best_params = optimized_params.best_params_
+                        print(f'Best params: {best_params}')
 
                         model = xgb.XGBRegressor(
-                            objective=optimized_params.best_params_["objective"],
-                            booster=optimized_params.best_params_["booster"],
-                            eval_metric="rmse",
-                            learning_rate=optimized_params.best_params_["learning_rate"],
-                            gamma=optimized_params.best_params_["gamma"],
-                            max_depth=optimized_params.best_params_["max_depth"],
-                            n_estimators=optimized_params.best_params_["n_estimators"],
-                            colsample_bytree=optimized_params.best_params_['colsample_bytree'],
-                            subsample=optimized_params.best_params_['subsample'],
-                            reg_alpha=optimized_params.best_params_['reg_alpha'],
-                            reg_lambda=optimized_params.best_params_['reg_lambda'],
-                            min_child_weight=optimized_params.best_params_['min_child_weight']
+                            objective=best_params["objective"],
+                            booster=best_params["booster"],
+                            eval_metric="mape",
+                            learning_rate=best_params["learning_rate"],
+                            gamma=best_params["gamma"],
+                            max_depth=best_params["max_depth"],
+                            n_estimators=best_params["n_estimators"],
+                            colsample_bytree=best_params['colsample_bytree'],
+                            subsample=best_params['subsample'],
+                            reg_alpha=best_params['reg_alpha'],
+                            reg_lambda=best_params['reg_lambda'],
+                            min_child_weight=best_params['min_child_weight']
                         )
                         model.fit(X_train, y_train)
                         y_pred = model.predict(X_test)
@@ -84,17 +87,17 @@ class TrainModelController:
 
                         self.hstBestParam.create({
                             'id': generate_random_string(5),
-                            'objective': optimized_params.best_params_['objective'],
-                            'booster': optimized_params.best_params_['booster'],
-                            'learning_rate': optimized_params.best_params_['learning_rate'],
-                            'max_depth': optimized_params.best_params_['max_depth'],
-                            'n_estimators': optimized_params.best_params_['n_estimators'],
-                            'gamma': optimized_params.best_params_['gamma'],
-                            'colsample_bytree': optimized_params.best_params_['colsample_bytree'],
-                            'subsample': optimized_params.best_params_['subsample'],
-                            'reg_alpha': optimized_params.best_params_['reg_alpha'],
-                            'reg_lambda': optimized_params.best_params_['reg_lambda'],
-                            'min_child_weight': optimized_params.best_params_['min_child_weight'],
+                            'objective': best_params['objective'],
+                            'booster': best_params['booster'],
+                            'learning_rate': best_params['learning_rate'],
+                            'max_depth': best_params['max_depth'],
+                            'n_estimators': best_params['n_estimators'],
+                            'gamma': best_params['gamma'],
+                            'colsample_bytree': best_params['colsample_bytree'],
+                            'subsample': best_params['subsample'],
+                            'reg_alpha': best_params['reg_alpha'],
+                            'reg_lambda': best_params['reg_lambda'],
+                            'min_child_weight': best_params['min_child_weight'],
                             'mape': mape
                         })
 

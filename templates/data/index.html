@@ -6,7 +6,7 @@
     <h1>Data</h1>
 </div>
 <table id="dataTable" class="table table-striped">
-    <thead>
+    <thead class="table-dark">
         <tr>
             <th>Tanggal</th>
             <th>Lotno</th>
@@ -15,6 +15,7 @@
             <th>Temp Mini Tank</th>
             <th>Temp Nozzle</th>
             <th>Temp Nozzle Filler</th>
+            <th>Label</th>
         </tr>
     </thead>
     <tbody>
@@ -27,6 +28,13 @@
             <td>{{ row['temp_mini_tank'] }}</td>
             <td>{{ row['temp_nozzle'] }}</td>
             <td>{{ row['temp_nozzle_filler'] }}</td>
+            <td>
+                {% if row['label'] == 'approved' %}
+                <span class="badge bg-success">{{ row['label'] }}</span>
+                {% else %}
+                <span class="badge bg-danger">{{ row['label'] }}</span>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>

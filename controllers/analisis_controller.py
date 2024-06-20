@@ -10,8 +10,9 @@ import os
 from models.hst_best_param_model import HstBestParamModel
 from helpers.preprocessing_helper import PreprocessingHelper
 from helpers.model_helper import xgboost_model
+plt.style.use('fivethirtyeight')
 
-class AnalisisController :
+class AnalisisController:
     
     def __init__(self):
         self.hstBestParamsModel = HstBestParamModel()
@@ -21,7 +22,7 @@ class AnalisisController :
         try:
             hst_best_param = self.hstBestParamsModel.find_all()
             data = None
-            
+            plot_url = None
 
             if request.method == 'POST':
                 try:
@@ -59,17 +60,32 @@ class AnalisisController :
                     prediksi = np.round(prediksi)
 
                     df_test['value'] = prediksi
+                    df_test['label'] = np.where((df_test['value'] <= 100) | (df_test['value'] >= 130), 'reject', 'approved')
 
                     data = df_test
-                    print(data)
+
+                    # Plot the predictions
+                    plt.figure(figsize=(14, 7))
+                    plt.plot(df_test.index, prediksi, label='Forecast')
+                    plt.legend()
+                    plt.title('Forecast vs. Date')
+                    plt.xlabel('Date')
+                    plt.ylabel('Value')
                     
+                    # Save the plot to a BytesIO object
+                    img = io.BytesIO()
+                    plt.savefig(img, format='png')
+                    img.seek(0)
+                    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
 
                     flash('Data berhasil disimpan', 'success')
-                    return render_template('analisis/index.html', data=data.to_dict(orient='records'))
+                    return render_template('analisis/index.html', data=data.to_dict(orient='records'), hst_best_param=hst_best_param, plot_url=plot_url)
                 except Exception as e:
                     print(f"Error: {e}")
                     flash('Data gagal disimpan', 'error')
-                    return render_template('analisis/index.html')
+                    return render_template('analisis/index.html', hst_best_param=hst_best_param)
+            
+            return render_template('analisis/index.html', hst_best_param=hst_best_param)
 
         except Exception as e:
             print(f"Error: {e}")  

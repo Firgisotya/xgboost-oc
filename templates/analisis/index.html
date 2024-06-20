@@ -5,41 +5,21 @@
 </div>
 <div class="card mt-4">
   <div class="card-body">
-    <form
-      id="form-post"
-      action="/analisis"
-      method="post"
-      enctype="multipart/form-data"
-    >
+    <form id="form-post" action="/analisis" method="post" enctype="multipart/form-data">
       <div class="form-group mx-auto" style="max-width: 400px">
         <!-- Button trigger modal -->
-        <button
-          type="button"
-          class="btn btn-primary w-100 rounded-sm btn-md"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
-        >
+        <button type="button" class="btn btn-primary w-100 rounded-sm btn-md" data-bs-toggle="modal"
+          data-bs-target="#exampleModal">
           Pilih Model
         </button>
 
         <!-- Modal -->
-        <div
-          class="modal fade"
-          id="exampleModal"
-          tabindex="-1"
-          aria-labelledby="exampleModalLabel"
-          aria-hidden="true"
-        >
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Pilih Model</h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 <p>
@@ -85,17 +65,13 @@
                         <td class="text-center">{{ row[11] }}</td>
                         <td class="text-center">{{ row[12] }}</td>
                         <td class="text-center">
-                          <button
-                            type="button"
-                            class="btn btn-primary"
-                            onclick="selectModel('{{ row[0] }}')"
-                            data-bs-dismiss="modal"
-                          >
+                          <button type="button" class="btn btn-primary" onclick="selectModel('{{ row[0] }}')"
+                            data-bs-dismiss="modal">
                             Pilih
                           </button>
                         </td>
                       </tr>
-  
+
                       {% endfor %}
                     </tbody>
                   </table>
@@ -105,11 +81,7 @@
                 {% endif %}
               </div>
               <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-danger"
-                  data-bs-dismiss="modal"
-                >
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
                   Close
                 </button>
                 <button type="button" class="btn btn-primary">
@@ -122,32 +94,16 @@
       </div>
       <div class="form-group mx-auto mt-3" style="max-width: 400px">
         <!-- read only from select model -->
-        <input
-          type="text"
-          class="form-control"
-          id="model"
-          name="model"
-          placeholder="Model"
-          readonly
-          required
-        />
+        <input type="text" class="form-control" id="model" name="model" placeholder="Model" readonly required />
       </div>
       <div class="form-group mx-auto mt-3" style="max-width: 400px">
-        <small id="alert" class="form-text text-danger" style="display: none"
-          >Format anda belum sesuai!
+        <small id="alert" class="form-text text-danger" style="display: none">Format anda belum sesuai!
         </small>
         <div class="custom-file">
-          <input
-            type="file"
-            class="form-control text-start"
-            id="data_uji"
-            name="data_uji"
-            required
-          />
+          <input type="file" class="form-control text-start" id="data_uji" name="data_uji" required />
           <label class="custom-file-label" for="data_uji">Unggah file</label>
           <!-- Format dokumen -->
-          <small id="formatDokumen" class="form-text text-muted"
-            >Format dokumen yang diterima: .csv
+          <small id="formatDokumen" class="form-text text-muted">Format dokumen yang diterima: .csv
           </small>
         </div>
       </div>
@@ -165,26 +121,39 @@
       <div class="col">
         <h2>Hasil Analisis</h2>
         <div class="table-responsive">
-          <table class="table table-bordered table-striped">
-            <thead>
+          <table id="dataTable" class="table table-bordered table-striped">
+            <thead class="table-dark">
               <tr>
-                <th>Tanggal</th>
+                <!-- <th>Tanggal</th> -->
                 <th>Lot Number</th>
                 <th>Production Order</th>
                 <th>Temperature Mini Tank</th>
                 <th>Temperature Nozzle</th>
                 <th>Temperature Nozzle Filler</th>
                 <th>Value</th>
+                <th>Label</th>
               </tr>
             </thead>
             <tbody>
               {% if data %}
               {% for row in data %}
-              {% comment %} <p>{{ row }}</p> {% endcomment %}
-              {% else %}
               <tr>
-                <td colspan="7" class="text-center">Tidak ada data</td>
+                <!-- <td>{{ row['tanggal'] }}</td> -->
+                <td>{{ row['lotno2'] }}</td>
+                <td>{{ row['prod_order2'] }}</td>
+                <td>{{ row['temp_mini_tank'] }}</td>
+                <td>{{ row['temp_nozzle'] }}</td>
+                <td>{{ row['temp_nozzle_filler'] }}</td>
+                <td>{{ row['value'] }}</td>
+                <td>
+                  {% if row['label'] == 'approved' %}
+                  <span class="badge bg-success">{{ row['label'] }}</span>
+                  {% else %}
+                  <span class="badge bg-danger">{{ row['label'] }}</span>
+                  {% endif %}
+                </td>
               </tr>
+              {% endfor %}
               {% endif %}
             </tbody>
           </table>
@@ -193,6 +162,15 @@
     </div>
   </div>
 </div>
+
+<!-- grafik data hasil analisis -->
+{% if plot_url %}
+<div class="text-center mt-4">
+  <h2>Forecast Plot</h2>
+  <img src="data:image/png;base64,{{ plot_url }}" class="img-fluid" alt="Forecast Plot">
+</div>
+{% endif %}
+
 
 {% endblock content %} {% block scripts %}
 <script>
