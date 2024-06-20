@@ -16,11 +16,12 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 16px solid #f3f3f3;
+  border: 16px solid #bcbcbc;
   border-top: 16px solid #5d87ff;
   border-radius: 50%;
   width: 120px;
   height: 120px;
+  z-index: 10000;
   animation: spin 1s linear infinite;
   -webkit-animation: spin 1s linear infinite;
 }
