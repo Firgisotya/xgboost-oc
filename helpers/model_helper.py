@@ -22,7 +22,7 @@ def xgboost_model(solution):
     model = xgb.XGBRegressor(
         objective=objective,
         booster=booster,
-        eval_metric="rmse",
+        eval_metric="mape",
         learning_rate=learning_rate,
         max_depth=max_depth,
         n_estimators=n_estimators,
