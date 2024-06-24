@@ -11,29 +11,29 @@ from helpers.util_helper import generate_random_string
 from helpers.preprocessing_helper import PreprocessingHelper
 # from helpers.rscv_helper import RandomizedSaerchHelper
 
-# param_grid = {
-#         "objective": ["reg:squarederror", "reg:linear"],
-#         "booster": ["gbtree", "gblinear"],
-#         "learning_rate": np.linspace(0.01, 0.2, 20).tolist(),
-#         "max_depth": range(3, 10),
-#         "n_estimators": range(100, 1000, 100),
-#         "gamma": np.linspace(0.01, 3, 30).tolist(),
-#         "colsample_bytree": np.linspace(0.5, 1, 6).tolist(),
-#         "subsample": np.linspace(0.5, 1, 6).tolist(),
-#         "reg_alpha": np.linspace(0.2, 1, 9).tolist(),
-#         "reg_lambda": range(1, 5),
-#         "min_child_weight": range(1, 25),
-# }
-
 param_grid = {
-    "learning_rate": [0.01, 0.1],
-    "max_depth": [3, 5, 7 ,10],
-    "n_estimators": [300, 400, 500, 600],
-    "min_child_weight": [1, 2, 3],
-    "colsample_bytree": [0.5, 0.7],
-    "subsample": [0.5, 0.7],
-    "gamma": [0, 1, 2],
+        "objective": ["reg:squarederror", "reg:linear"],
+        "booster": ["gbtree", "gblinear"],
+        "learning_rate": [0.01, 0.1],
+        "max_depth": [2, 3, 4, 5, 6, 7, 10, 12, 15, 20],
+        "n_estimators": [100, 250, 300, 400, 500, 600],
+        "gamma": [1, 2, 3],
+        "colsample_bytree": [0.5, 0.7],
+        "subsample": [0.5, 0.7],
+        "reg_alpha": [0.2, 0.5, 1],
+        "reg_lambda": [1, 1.5, 2, 3, 4.5, 5],
+        "min_child_weight": [1, 3, 5, 7, 10, 15, 20, 25],
 }
+
+# param_grid = {
+#     "learning_rate": [0.01, 0.1],
+#     "max_depth": [3, 5, 7 ,10],
+#     "n_estimators": [300, 400, 500, 600],
+#     "min_child_weight": [1, 2, 3],
+#     "colsample_bytree": [0.5, 0.7],
+#     "subsample": [0.5, 0.7],
+#     "gamma": [0, 1, 2],
+# }
 
 
 class TrainModelController:
@@ -51,11 +51,11 @@ class TrainModelController:
                 try:
                     X_train, X_test, y_train, y_test = self.preprocessing_helper.load_dataset()
 
-                    optimized_params = GridSearchCV(
+                    optimized_params = RandomizedSearchCV(
                         xgb.XGBRegressor(),
                         param_grid,
                         cv=3,
-                        # n_iter=10,
+                        n_iter=10,
                         scoring='neg_mean_absolute_percentage_error',
                         verbose=0,
                         n_jobs=-1
@@ -76,8 +76,8 @@ class TrainModelController:
                         print(f'Best params: {best_params}')
 
                         model = xgb.XGBRegressor(
-                            # objective=best_params["objective"],
-                            # booster=best_params["booster"],
+                            objective=best_params["objective"],
+                            booster=best_params["booster"],
                             eval_metric="mape",
                             learning_rate=best_params["learning_rate"],
                             gamma=best_params["gamma"],
@@ -85,8 +85,8 @@ class TrainModelController:
                             n_estimators=best_params["n_estimators"],
                             colsample_bytree=best_params['colsample_bytree'],
                             subsample=best_params['subsample'],
-                            # reg_alpha=best_params['reg_alpha'],
-                            # reg_lambda=best_params['reg_lambda'],
+                            reg_alpha=best_params['reg_alpha'],
+                            reg_lambda=best_params['reg_lambda'],
                             min_child_weight=best_params['min_child_weight']
                         )
                         model.fit(X_train, y_train)
@@ -95,21 +95,21 @@ class TrainModelController:
                         mape = round(mape, 3)
                         print(f'MAPE: {mape}')
 
-                        # self.hstBestParam.create({
-                        #     'id': generate_random_string(5),
-                        #     'objective': best_params['objective'],
-                        #     'booster': best_params['booster'],
-                        #     'learning_rate': best_params['learning_rate'],
-                        #     'max_depth': best_params['max_depth'],
-                        #     'n_estimators': best_params['n_estimators'],
-                        #     'gamma': best_params['gamma'],
-                        #     'colsample_bytree': best_params['colsample_bytree'],
-                        #     'subsample': best_params['subsample'],
-                        #     'reg_alpha': best_params['reg_alpha'],
-                        #     'reg_lambda': best_params['reg_lambda'],
-                        #     'min_child_weight': best_params['min_child_weight'],
-                        #     'mape': mape
-                        # })
+                        self.hstBestParam.create({
+                            'id': generate_random_string(5),
+                            'objective': best_params['objective'],
+                            'booster': best_params['booster'],
+                            'learning_rate': best_params['learning_rate'],
+                            'max_depth': best_params['max_depth'],
+                            'n_estimators': best_params['n_estimators'],
+                            'gamma': best_params['gamma'],
+                            'colsample_bytree': best_params['colsample_bytree'],
+                            'subsample': best_params['subsample'],
+                            'reg_alpha': best_params['reg_alpha'],
+                            'reg_lambda': best_params['reg_lambda'],
+                            'min_child_weight': best_params['min_child_weight'],
+                            'mape': mape
+                        })
 
                     else:
                         flash('Failed to find best parameters.')

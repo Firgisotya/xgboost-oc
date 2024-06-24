@@ -1,9 +1,54 @@
 {% extends 'layouts/main.html' %}
 
+{% block title %}
+  Pressure PRO
+{% endblock %}
+
+
 {% block content %}
-    <!--  Row 1 -->
-<div class="row">
-    <h1>Home</h1>
+<section>
+  <div class="card">
+    <div class="card-body text-center">
+      <h1 class="h2">Selamat datang di Pressure PRO</h1>
+      <p class="subtitle">Pressure Pro adalah aplikasi web untuk analisa nilai pressure pada data menggunakan algoritma <em>XGBoost</em>. Aplikasi ini memungkinkan pengguna untuk melatih model gradient boosting dan mendeteksi nilai pada data.</p>
+    </div>
   </div>
+</section>
+
+<!-- Panduan Penggunaan -->
+<section class="mt-4">
+  <h2 class="h4">Panduan Penggunaan</h2>
+  <p>
+    Untuk menggunakan Pressure Pro, pengguna dapat mengikuti langkah-langkah berikut:
+  </p>
+  <ol>
+    <li>
+      <strong>Melatih Model XGBoost dengan Randomized Search:</strong>
+      <p>
+        Pengguna dapat mengakses menu <a href="/latih-model">Latih Data</a> untuk melatih model XGBoost. Langkah-langkah untuk melatih model antara lain:
+      </p>
+      <ol>
+        <li>Masuk ke menu <a href="/latih-model">Latih Data</a>.</li>
+        <li>Mulai proses pelatihan model.</li>
+        <li>Tunggu hingga pelatihan selesai.</li>
+        <li>Setelah pelatihan selesai maka akan menampilakan hasil pelatihan yang memuat solusi terbaik</li>
+      </ol>
+    </li>
+    <li>
+      <strong>Memprediksi nilai pada Data:</strong>
+      <p>
+        Setelah model dilatih, pengguna dapat mengakses menu <a href="/analisis">Analisis</a> untuk memprediksi nilai pada data yang dimiliki. Langkah-langkah untuk memprediksi antara lain:
+      </p>
+      <ol>
+        <li>Masuk ke menu <a href="/analisis">Analisis</a>.</li>
+        <li>Pilih model yang sudah dilatih.</li>
+        <li>Unggah file data uji berformat excel (csv)</li>
+        <li>Mulai proses prediksi</li>
+        <li>Tunggu hingga proses selesai.</li>
+        <li>Setelah proses selesai maka akan menampilakan hasil prediksi dan grafik nilai hasil prediksi</li>
+      </ol>
+    </li>
+  </ol>
+</section>
 {% endblock content %}
     

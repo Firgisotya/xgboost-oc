@@ -68,7 +68,7 @@ class AnalisisController:
                     plt.figure(figsize=(14, 7))
                     plt.plot(df_test.index, prediksi, label='Forecast')
                     plt.legend()
-                    plt.title('Forecast vs Date')
+                    plt.title('Forecast vs. Date')
                     plt.xlabel('Date')
                     plt.ylabel('Value')
                     

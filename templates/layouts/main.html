@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BPD Analisis</title>
+    <title>{% block title %} {% endblock %}</title>
     <!-- <link
       rel="shortcut icon"
       type="image/png"
@@ -18,7 +18,10 @@
       href="{{ url_for('static', filename='assets/css/styles.min.css') }}"
     />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
     <!-- Include DataTables CSS -->
     <link
@@ -26,10 +29,23 @@
       type="text/css"
       href="https://cdn.datatables.net/2.0.7/css/dataTables.bootstrap5.css"
     />
+
+    <style>
+      .sidebar-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        background: -webkit-linear-gradient(#5d87ff, #0042ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        padding: 10px;
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+    </style>
   </head>
 
   <body>
-    <div class="loading-overlay z-3" id="loadingOverlay" style="z-index: 9999;">
+    <div class="loading-overlay z-3" id="loadingOverlay" style="z-index: 9999">
       <div class="loading-spinner"></div>
     </div>
 
@@ -68,27 +84,29 @@
 
     <script>
       // script.js
-      document.addEventListener('DOMContentLoaded', function() {
-        var loadingOverlay = document.getElementById('loadingOverlay');
-        var data = document.getElementById('data');
-  
+      document.addEventListener("DOMContentLoaded", function () {
+        var loadingOverlay = document.getElementById("loadingOverlay");
+        var data = document.getElementById("data");
+
         // Tampilkan loading overlay saat halaman dimuat
-        loadingOverlay.style.display = 'block';
-  
+        loadingOverlay.style.display = "block";
+
         // Semua sumber daya telah dimuat, sembunyikan loading overlay dan tampilkan data
-        window.addEventListener('load', function() {
-            loadingOverlay.style.display = 'none';
-            data.style.display = 'block';
+        window.addEventListener("load", function () {
+          loadingOverlay.style.display = "none";
+          data.style.display = "block";
         });
       });
-  
-      document.getElementById("form-post").addEventListener("submit", function() {
-        document.getElementById("loadingOverlay").style.display = "block";
-      });
+
+      document
+        .getElementById("form-post")
+        .addEventListener("submit", function () {
+          document.getElementById("loadingOverlay").style.display = "block";
+        });
     </script>
-    
+
     <script>
-      new DataTable('#dataTable');
+      new DataTable("#dataTable");
     </script>
   </body>
 </html>
