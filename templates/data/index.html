@@ -1,48 +1,44 @@
-{% extends 'layouts/main.html' %}
-
-{% block title %}
-Pressure PRO - Data
-{% endblock title %}
-
-{% block content %}
+{% extends 'layouts/main.html' %} {% block title %} Pressure PRO - Data {%
+endblock title %} {% block content %}
 <!--  Row 1 -->
 <div class="row">
-    <h1>Data</h1>
+  <h1>Data</h1>
 </div>
-<table id="dataTable" class="table table-striped">
+<div class="table-responsive">
+  <table id="dataTable" class="table table-striped">
     <thead class="table-dark">
-        <tr>
-            <th>Tanggal</th>
-            <th>Lotno</th>
-            <th>Prod Order</th>
-            <th>Value</th>
-            <th>Temp Mini Tank</th>
-            <th>Temp Nozzle</th>
-            <th>Temp Nozzle Filler</th>
-            <th>Label</th>
-        </tr>
+      <tr>
+        <th>Tanggal</th>
+        <th>Lotno</th>
+        <th>Prod Order</th>
+        <th>Value</th>
+        <th>Temp Mini Tank</th>
+        <th>Temp Nozzle</th>
+        <th>Temp Nozzle Filler</th>
+        <th>Label</th>
+      </tr>
     </thead>
     <tbody>
-        {% for row in data %}
-        <tr>
-            <td>{{ row['tanggal'] }}</td>
-            <td>{{ row['lotno2'] }}</td>
-            <td>{{ row['prod_order2'] }}</td>
-            <td>{{ row['value'] }}</td>
-            <td>{{ row['temp_mini_tank'] }}</td>
-            <td>{{ row['temp_nozzle'] }}</td>
-            <td>{{ row['temp_nozzle_filler'] }}</td>
-            <td>
-                {% if row['label'] == 'approved' %}
-                <span class="badge bg-success">{{ row['label'] }}</span>
-                {% else %}
-                <span class="badge bg-danger">{{ row['label'] }}</span>
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
+      {% for row in data %}
+      <tr>
+        <td>{{ row['tanggal'] }}</td>
+        <td>{{ row['lotno2'] }}</td>
+        <td>{{ row['prod_order2'] }}</td>
+        <td>{{ row['value'] }}</td>
+        <td>{{ row['temp_mini_tank'] }}</td>
+        <td>{{ row['temp_nozzle'] }}</td>
+        <td>{{ row['temp_nozzle_filler'] }}</td>
+        <td>
+          {% if row['label'] == 'approved' %}
+          <span class="badge bg-success">{{ row['label'] }}</span>
+          {% else %}
+          <span class="badge bg-danger">{{ row['label'] }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
     </tbody>
-</table>
+  </table>
+</div>
 
 {% endblock content %}
-
