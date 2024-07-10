@@ -30,46 +30,50 @@
   </div>
 </div>
 
+<!-- mape -->
+<div class="card mt-4">
+  <div class="card-body">
+    <h3 class="">MAPE : {{ mape }}</h2>
+
+  </div>
+</div>
+
 <!-- hasil train model -->
-<div class="card mt-5">
+<div class="card mt-4">
   <div class="card-body">
     <div class="row justify-content-center">
       <div class="col">
-        <h2>Hasil Latih Model</h2>
+        <h2>Hasil</h2>
         <div class="table-responsive">
-          <table class="table table-bordered">
-            <thead>
+          <table id="dataTable" class="table table-bordered table-striped">
+            <thead class="table-dark">
               <tr>
-                <th>Learning Rate</th>
-                <th>Max Depth</th>
-                <th>Number of Estimators</th>
-                <th>Gamma</th>
-                <th>ColSample Bytree</th>
-                <th>Subsample</th>
-                <th>Reg Alpha</th>
-                <th>Reg Lambda</th>
-                <th>Minimum Child Weight</th>
-                <th>MAPE</th>
+                <!-- <th>Tanggal</th> -->
+                <th>Lot Number</th>
+                <th>Production Order</th>
+                <th>Temperature Mini Tank</th>
+                <th>Temperature Nozzle</th>
+                <th>Temperature Nozzle Filler</th>
+                <th>Value</th>
+                <th>Reject</th>
+                <th>Prediksi Reject</th>
               </tr>
             </thead>
             <tbody>
-              {% if optimized_params %}
+              {% if data %}
+              {% for row in data %}
               <tr>
-                <td>{{ optimized_params.best_params_.learning_rate }}</td>
-                <td>{{ optimized_params.best_params_.max_depth }}</td>
-                <td>{{ optimized_params.best_params_.n_estimators }}</td>
-                <td>{{ optimized_params.best_params_.gamma }}</td>
-                <td>{{ optimized_params.best_params_.colsample_bytree }}</td>
-                <td>{{ optimized_params.best_params_.subsample }}</td>
-                <td>{{ optimized_params.best_params_.reg_alpha }}</td>
-                <td>{{ optimized_params.best_params_.reg_lambda }}</td>
-                <td>{{ optimized_params.best_params_.min_child_weight }}</td>
-                <td>{{ mape }}</td>
+                <!-- <td>{{ row['tanggal'] }}</td> -->
+                <td>{{ row['lotno2'] }}</td>
+                <td>{{ row['prod_order2'] }}</td>
+                <td>{{ row['temp_mini_tank'] }}</td>
+                <td>{{ row['temp_nozzle'] }}</td>
+                <td>{{ row['temp_nozzle_filler'] }}</td>
+                <td>{{ row['value'] }}</td>
+                <td>{{ row['reject'] }}</td>
+                <td>{{ row['prediksi_reject'] }}</td>
               </tr>
-              {% else %}
-              <tr>
-                <td colspan="5" class="text-center">No results to display</td>
-              </tr>
+              {% endfor %}
               {% endif %}
             </tbody>
           </table>
@@ -78,5 +82,7 @@
     </div>
   </div>
 </div>
+
+
 
 {% endblock content %}

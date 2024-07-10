@@ -2,6 +2,8 @@ from flask import render_template, request, redirect, session, flash
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import matplotlib.pyplot as plt
+import io
+import base64
 import warnings
 import xgboost as xgb
 from sklearn.model_selection import RandomizedSearchCV, cross_val_score, GridSearchCV
@@ -46,81 +48,35 @@ class TrainModelController:
         try:
             mape = None
             optimized_params = None
+            plot_url = None
 
             if request.method == 'POST':
                 try:
                     X_train, X_test, y_train, y_test = self.preprocessing_helper.load_dataset()
 
-                    optimized_params = RandomizedSearchCV(
-                        xgb.XGBRegressor(),
-                        param_grid,
-                        cv=3,
-                        n_iter=10,
-                        scoring='neg_mean_absolute_percentage_error',
-                        verbose=0,
-                        n_jobs=-1
-                    )
-                    with warnings.catch_warnings():
-                        warnings.simplefilter("ignore")
-                        optimized_params.fit(
-                            X_train,
-                            y_train,
-                            early_stopping_rounds=10,
-                            eval_set=[(X_test, y_test)],
-                            verbose=False
+                    model = xgb.XGBRegressor(
+                            eval_metric="rmse",
+                            learning_rate=0.1,
+                            gamma=5,
+                            reg_lambda=3,
                         )
+                    model.fit(X_train, y_train)
+                    y_pred = model.predict(X_test)
+                    mape = mean_absolute_percentage_error(y_test, y_pred)
+                    mape = np.round(mape, 3)
+                    print("Mean Absolute Percentage Error: ", mape)
 
-                
-                    if optimized_params is not None:
-                        best_params = optimized_params.best_params_
-                        print(f'Best params: {best_params}')
+                    data_test = self.preprocessing_helper.load_data_test()
+                    data_test['prediksi_reject'] = np.round(y_pred)
 
-                        model = xgb.XGBRegressor(
-                            objective=best_params["objective"],
-                            booster=best_params["booster"],
-                            eval_metric="mape",
-                            learning_rate=best_params["learning_rate"],
-                            gamma=best_params["gamma"],
-                            max_depth=best_params["max_depth"],
-                            n_estimators=best_params["n_estimators"],
-                            colsample_bytree=best_params['colsample_bytree'],
-                            subsample=best_params['subsample'],
-                            reg_alpha=best_params['reg_alpha'],
-                            reg_lambda=best_params['reg_lambda'],
-                            min_child_weight=best_params['min_child_weight']
-                        )
-                        model.fit(X_train, y_train)
-                        y_pred = model.predict(X_test)
-                        mape = mean_absolute_percentage_error(y_test, y_pred)
-                        mape = round(mape, 3)
-                        print(f'MAPE: {mape}')
-
-                        self.hstBestParam.create({
-                            'id': generate_random_string(5),
-                            'objective': best_params['objective'],
-                            'booster': best_params['booster'],
-                            'learning_rate': best_params['learning_rate'],
-                            'max_depth': best_params['max_depth'],
-                            'n_estimators': best_params['n_estimators'],
-                            'gamma': best_params['gamma'],
-                            'colsample_bytree': best_params['colsample_bytree'],
-                            'subsample': best_params['subsample'],
-                            'reg_alpha': best_params['reg_alpha'],
-                            'reg_lambda': best_params['reg_lambda'],
-                            'min_child_weight': best_params['min_child_weight'],
-                            'mape': mape
-                        })
-
-                    else:
-                        flash('Failed to find best parameters.')
-                        return redirect('/latih-model')
+                    return render_template('train/index.html', data=data_test.to_dict(orient='records'), mape=mape)
 
                 except Exception as e:
                     print(e)
                     flash('There was an error processing the form. Please check your input values.')
                     return redirect('/latih-model')
 
-            return render_template('train/index.html', optimized_params=optimized_params, mape=mape)
+            return render_template('train/index.html')
 
         except Exception as e:
             print(f"Error in index method: {e}")

@@ -12,96 +12,7 @@ Pressure PRO - Analisis
 <div class="card mt-4">
   <div class="card-body">
     <form id="form-post" action="/analisis" method="post" enctype="multipart/form-data">
-      <div class="form-group mx-auto" style="max-width: 400px">
-        <!-- Button trigger modal -->
-        <button type="button" class="btn btn-primary w-100 rounded-sm btn-md" data-bs-toggle="modal"
-          data-bs-target="#exampleModal">
-          Pilih Model
-        </button>
 
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-xl">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pilih Model</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <p>
-                  Pilih model yang akan digunakan untuk memprediksi nilai pada
-                  data. model yang dipilih adalah model yang telah dilatih
-                  sebelumnya menggunakan <em>Randomized Search</em>.
-                </p>
-                {% if hst_best_param %}
-                <div class="table-responsive">
-                  <table class="table table-striped">
-                    <thead class="table-dark">
-                      <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Objective</th>
-                        <th scope="col">Booster</th>
-                        <th scope="col">Learning Rate</th>
-                        <th scope="col">Gamma</th>
-                        <th scope="col">Max Depth</th>
-                        <th scope="col">Number of Estimators</th>
-                        <th scope="col">Colsample Bytree</th>
-                        <th scope="col">Subsample</th>
-                        <th scope="col">Reg Alpha</th>
-                        <th scope="col">Reg Lambda</th>
-                        <th scope="col">Minimum Child Weight</th>
-                        <th scope="col">MAPE</th>
-                        <th scope="col">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {% for row in hst_best_param %}
-                      <tr>
-                        <th scope="row">{{ row[0] }}</th>
-                        <td class="text-center">{{ row[1] }}</td>
-                        <td class="text-center">{{ row[2] }}</td>
-                        <td class="text-center">{{ row[3] }}</td>
-                        <td class="text-center">{{ row[4] }}</td>
-                        <td class="text-center">{{ row[5] }}</td>
-                        <td class="text-center">{{ row[6] }}</td>
-                        <td class="text-center">{{ row[7] }}</td>
-                        <td class="text-center">{{ row[8] }}</td>
-                        <td class="text-center">{{ row[9] }}</td>
-                        <td class="text-center">{{ row[10] }}</td>
-                        <td class="text-center">{{ row[11] }}</td>
-                        <td class="text-center">{{ row[12] }}</td>
-                        <td class="text-center">
-                          <button type="button" class="btn btn-primary" onclick="selectModel('{{ row[0] }}')"
-                            data-bs-dismiss="modal">
-                            Pilih
-                          </button>
-                        </td>
-                      </tr>
-
-                      {% endfor %}
-                    </tbody>
-                  </table>
-                </div>
-                {% else %}
-                <p class="text-center">Tidak ada model yang tersedia</p>
-                {% endif %}
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                  Close
-                </button>
-                <button type="button" class="btn btn-primary">
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="form-group mx-auto mt-3" style="max-width: 400px">
-        <!-- read only from select model -->
-        <input type="text" class="form-control" id="model" name="model" placeholder="Model" readonly required />
-      </div>
       <div class="form-group mx-auto mt-3" style="max-width: 400px">
         <small id="alert" class="form-text text-danger" style="display: none">Format anda belum sesuai!
         </small>
@@ -137,7 +48,7 @@ Pressure PRO - Analisis
                 <th>Temperature Nozzle</th>
                 <th>Temperature Nozzle Filler</th>
                 <th>Value</th>
-                <th>Label</th>
+                <th>Reject</th>
               </tr>
             </thead>
             <tbody>
@@ -151,13 +62,7 @@ Pressure PRO - Analisis
                 <td>{{ row['temp_nozzle'] }}</td>
                 <td>{{ row['temp_nozzle_filler'] }}</td>
                 <td>{{ row['value'] }}</td>
-                <td>
-                  {% if row['label'] == 'approved' %}
-                  <span class="badge bg-success">{{ row['label'] }}</span>
-                  {% else %}
-                  <span class="badge bg-danger">{{ row['label'] }}</span>
-                  {% endif %}
-                </td>
+                <td>{{ row['reject'] }}</td>
               </tr>
               {% endfor %}
               {% endif %}
