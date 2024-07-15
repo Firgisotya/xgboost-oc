@@ -30,11 +30,17 @@
   </div>
 </div>
 
-<!-- mape -->
+<!-- data 3 bulan -->
 <div class="card mt-4">
   <div class="card-body">
-    <h3 class="">MAPE : {{ mape }}</h2>
-
+    <h2>Data 3 Bulan</h2>
+    {% if data_test_3 %}
+    <div class="d-flex justify-content-center">
+      
+    </div>
+    {% else %}
+    <p class="text-center text-gray">Tidak ada data</p>
+    {% endif %}
   </div>
 </div>
 

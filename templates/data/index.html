@@ -15,7 +15,7 @@ endblock title %} {% block content %}
         <th>Temp Mini Tank</th>
         <th>Temp Nozzle</th>
         <th>Temp Nozzle Filler</th>
-        <th>Label</th>
+        <th>Reject</th>
       </tr>
     </thead>
     <tbody>
@@ -28,13 +28,7 @@ endblock title %} {% block content %}
         <td>{{ row['temp_mini_tank'] }}</td>
         <td>{{ row['temp_nozzle'] }}</td>
         <td>{{ row['temp_nozzle_filler'] }}</td>
-        <td>
-          {% if row['label'] == 'approved' %}
-          <span class="badge bg-success">{{ row['label'] }}</span>
-          {% else %}
-          <span class="badge bg-danger">{{ row['label'] }}</span>
-          {% endif %}
-        </td>
+        <td>{{ row['reject'] }}</td>
       </tr>
       {% endfor %}
     </tbody>
