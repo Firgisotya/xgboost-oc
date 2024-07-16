@@ -1,29 +1,27 @@
 from flask import request, redirect, url_for, render_template, flash
 import pandas as pd
 import numpy as np
-import joblib
-import matplotlib.pyplot as plt
-import seaborn as sns
-import io
-import base64
 import os
+import joblib
+import xgboost as xgb
 from sklearn.metrics import mean_absolute_percentage_error
-from models.hst_best_param_model import HstBestParamModel
 from helpers.preprocessing_helper import PreprocessingHelper
-from helpers.model_helper import xgboost_model
-plt.style.use('fivethirtyeight')
 
 class AnalisisController:
     
     def __init__(self):
-        # self.hstBestParamsModel = HstBestParamModel()
         self.preprocessing_helper = PreprocessingHelper()
+
+    def load_dataset(self):
+        file_path = os.path.join('static', 'dataset', 'data_hour_2023.csv')
+        return pd.read_csv(file_path)
 
     def index(self):
         try:
-            # hst_best_param = self.hstBestParamsModel.find_all()
-            data = None
-            plot_url = None
+            data_plot = {
+                "label": [],
+                "reject": [],
+            }
 
             if request.method == 'POST':
                 try:
@@ -36,53 +34,49 @@ class AnalisisController:
                     data_uji.save(file_path)
 
                     #load data uji
-                    df_train = self.preprocessing_helper.dataset_train()
+                    df_train = self.load_dataset()
                     df_train['tanggal'] = pd.to_datetime(df_train['tanggal'])
-                    df_train.set_index('tanggal', inplace=True)
                     df_train.dropna(inplace=True)
                     df_test = pd.read_csv(file_path)
                     df_test['tanggal'] = pd.to_datetime(df_test['tanggal'])
-                    df_test.set_index('tanggal', inplace=True)
                     df_test.dropna(inplace=True)
 
                     
-                    X_train = df_train.drop(columns=['lotno2', 'prod_order2', 'reject'])
-                    y_train = df_train['reject']
-                    X_test = df_test.drop(columns=['lotno2', 'prod_order2', 'reject'])
-                    y_test = df_test['reject']
-                    
-                    # row = self.hstBestParamsModel.find_by_id(model)
-                    # params_distribution = [row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11]]
-                    # print(params_distribution)
+                    X_train = df_train.drop(columns=["tanggal", "reject", "lotno2", "prod_order2"])
+                    y_train = df_train["reject"]
+                    X_test = df_test.drop(columns=["tanggal", "reject", "lotno2", "prod_order2"])
+                    y_test = df_test["reject"]
 
-                    model = xgboost_model()
+                    # model
+                    file_load = os.path.join('static', 'models', 'model_xgb.pkl')
+                    model = joblib.load(file_load)
                     model.fit(X_train, y_train)
-                    prediksi = model.predict(X_test)
-                    prediksi = np.round(prediksi)
 
-                    mape = mean_absolute_percentage_error(y_test, prediksi)
-                    print("Mean Absolute Percentage Error: ", mape)
+                    # prediksi
+                    y_pred = model.predict(X_test)
+                    y_pred = np.round(y_pred)
 
-                    df_test['reject'] = prediksi
+                    # MAPE
+                    # mape = mean_absolute_percentage_error(y_test, y_pred)
 
-                    data = df_test
+                    # mape_persen = mape * 100
 
-                    # Plot the predictions
-                    plt.figure(figsize=(14, 7))
-                    plt.plot(df_test.index, prediksi, label='Forecast')
-                    plt.legend()
-                    plt.title('Forecast vs Date')
-                    plt.xlabel('Date')
-                    plt.ylabel('Value')
+                    # akurasi = 100 - mape_persen
+
+                    # print(f"MAPE: {round(mape, 3)}")
+
+                    # print(f"MAPE (%): {mape_persen:.2f}%")
+
+                    # print(f"Akurasi (%): {akurasi:.2f}%")
+
+                    df_test["reject"] = np.round(y_pred)
+
+                    data_test = df_test.to_dict(orient='records')
+
+                    data_plot["label"] = df_test["lotno2"].tolist()
+                    data_plot["reject"] = df_test["reject"].tolist()
                     
-                    # Save the plot to a BytesIO object
-                    img = io.BytesIO()
-                    plt.savefig(img, format='png')
-                    img.seek(0)
-                    plot_url = base64.b64encode(img.getvalue()).decode('utf8')
-
-                    flash('Data berhasil disimpan', 'success')
-                    return render_template('analisis/index.html', data=data.to_dict(orient='records'), plot_url=plot_url)
+                    return render_template('analisis/index.html', data=data_test, data_plot=data_plot)
                 except Exception as e:
                     print(f"Error: {e}")
                     flash('Data gagal disimpan', 'error')

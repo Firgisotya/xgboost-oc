@@ -12,12 +12,7 @@
   <div class="card-body">
     <div class="row justify-content-center">
       <div class="col">
-        <form
-          id="form-post"
-          action="/latih-model"
-          method="post"
-          enctype="multipart/form-data"
-        >
+        <form id="form-post" action="/latih-model" method="post" enctype="multipart/form-data">
           <!-- Submit button -->
           <div class="form-group row mt-4">
             <div class="col text-center">
@@ -30,31 +25,74 @@
   </div>
 </div>
 
-<!-- data 3 bulan -->
-<div class="card mt-4">
-  <div class="card-body">
-    <h2>Data 3 Bulan</h2>
-    {% if data_test_3 %}
-    <div class="d-flex justify-content-center">
-      
-    </div>
-    {% else %}
-    <p class="text-center text-gray">Tidak ada data</p>
-    {% endif %}
+{% if data %}
+
+<div class="row">
+  <div class="col">
+    <h1>Hasil</h1>
   </div>
 </div>
 
-<!-- hasil train model -->
+<!-- hasil -->
 <div class="card mt-4">
   <div class="card-body">
-    <div class="row justify-content-center">
-      <div class="col">
-        <h2>Hasil</h2>
+    <div class="row">
+      <div class="col-md-8">
+        <div id="chartTest"></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card card-custom text-white bg-danger mb-4">
+          <div class="card-body">
+            <h5 class="card-title text-center">Nilai MAPE</h5>
+            <h2 class="text-center">{{ mape | round(2) }}%</h2>
+            <p class="card-text text-center">Tingkat Kesalahan Prediksi</p>
+          </div>
+        </div>
+        <div class="card card-custom text-white bg-success mb-4">
+          <div class="card-body">
+            <h5 class="card-title text-center">Nilai Akurasi</h5>
+            <h2 class="text-center">{{ akurasi | round(2) }}%</h2>
+            <p class="card-text text-center">Tingkat Nilai Akurasi Prediksi</p>
+          </div>
+        </div>
+        <!-- <div class="card card-custom p-3">
+          <h5 class="card-title text-center">Skala MAPE</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">%</th>
+                <th scope="col">Kriteria</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>&lt; 10%</td>
+                <td>Sangat Baik</td>
+              </tr>
+              <tr>
+                <td>10% - 20%</td>
+                <td>Baik</td>
+              </tr>
+              <tr>
+                <td>20% - 50%</td>
+                <td>Cukup</td>
+              </tr>
+              <tr>
+                <td>&gt; 50%</td>
+                <td>Buruk</td>
+              </tr>
+            </tbody>
+          </table>
+        </div> -->
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <div class="table-responsive">
           <table id="dataTable" class="table table-bordered table-striped">
             <thead class="table-dark">
               <tr>
-                <!-- <th>Tanggal</th> -->
+                <th>Tanggal</th>
                 <th>Lot Number</th>
                 <th>Production Order</th>
                 <th>Temperature Mini Tank</th>
@@ -69,7 +107,7 @@
               {% if data %}
               {% for row in data %}
               <tr>
-                <!-- <td>{{ row['tanggal'] }}</td> -->
+                <td>{{ row['tanggal'] }}</td>
                 <td>{{ row['lotno2'] }}</td>
                 <td>{{ row['prod_order2'] }}</td>
                 <td>{{ row['temp_mini_tank'] }}</td>
@@ -77,7 +115,7 @@
                 <td>{{ row['temp_nozzle_filler'] }}</td>
                 <td>{{ row['value'] }}</td>
                 <td>{{ row['reject'] }}</td>
-                <td>{{ row['prediksi_reject'] }}</td>
+                <td>{{ row['forecast'] }}</td>
               </tr>
               {% endfor %}
               {% endif %}
@@ -89,6 +127,73 @@
   </div>
 </div>
 
+<div id="data_plot" hidden>
+  {{ data_plot | tojson }}
+</div>
 
+{% endif %}
 
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  const jsonData = JSON.parse(document.getElementById("data_plot").textContent);
+  // console.log(jsonData);
+  var options = {
+    chart: {
+      height: 350,
+      type: "line",
+      stacked: false
+    },
+    dataLabels: {
+      enabled: false
+    },
+    colors: ["#247BA0", "#FF1654"],
+    series: [
+      {
+        name: "Actual",
+        data: jsonData.reject
+      },
+      {
+        name: "Prediksi",
+        data: jsonData.forecast
+      }
+    ],
+    stroke: {
+      width: [4, 4]
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: "20%"
+      }
+    },
+    xaxis: {
+      categories: jsonData.label
+    },
+    yaxis: [
+      {
+        axisTicks: {
+          show: true
+        },
+      },
+    ],
+    tooltip: {
+      shared: false,
+      intersect: true,
+      x: {
+        show: false
+      }
+    },
+    legend: {
+      horizontalAlign: "left",
+      offsetX: 40
+    }
+  };
+
+  var chart = new ApexCharts(document.querySelector("#chartTest"), options);
+
+  chart.render();
+</script>
+
+
+{% endblock scripts %}

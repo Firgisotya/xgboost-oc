@@ -22,7 +22,7 @@ class DataModel:
                             "temp_mini_tank": row[4],
                             "temp_nozzle": row[5],
                             "temp_nozzle_filler": row[6],
-                            "label": row[7],
+                            "reject": row[7],
                         }
                         data.append(formatted_row)
                 connection.close()

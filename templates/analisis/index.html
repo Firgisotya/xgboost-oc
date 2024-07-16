@@ -31,17 +31,30 @@ Pressure PRO - Analisis
   </div>
 </div>
 
-<!-- hasil analisis -->
+
+{% if data %}
+
+<div class="row">
+  <div class="col">
+    <h1>Hasil Analisis</h1>
+  </div>
+</div>
+
+<!-- hasil -->
 <div class="card mt-4">
   <div class="card-body">
-    <div class="row justify-content-center">
-      <div class="col">
-        <h2>Hasil Analisis</h2>
+    <div class="row">
+      <div class="col-md-12">
+        <div id="chartTest"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
         <div class="table-responsive">
           <table id="dataTable" class="table table-bordered table-striped">
             <thead class="table-dark">
               <tr>
-                <!-- <th>Tanggal</th> -->
+                <th>Tanggal</th>
                 <th>Lot Number</th>
                 <th>Production Order</th>
                 <th>Temperature Mini Tank</th>
@@ -55,7 +68,7 @@ Pressure PRO - Analisis
               {% if data %}
               {% for row in data %}
               <tr>
-                <!-- <td>{{ row['tanggal'] }}</td> -->
+                <td>{{ row['tanggal'] }}</td>
                 <td>{{ row['lotno2'] }}</td>
                 <td>{{ row['prod_order2'] }}</td>
                 <td>{{ row['temp_mini_tank'] }}</td>
@@ -74,20 +87,71 @@ Pressure PRO - Analisis
   </div>
 </div>
 
-<!-- grafik data hasil analisis -->
-{% if plot_url %}
-<div class="text-center mt-4">
-  <h2>Forecast Plot</h2>
-  <img src="data:image/png;base64,{{ plot_url }}" class="img-fluid" alt="Forecast Plot">
+<div id="data_plot" hidden>
+  {{ data_plot | tojson }}
 </div>
+
 {% endif %}
 
+{% endblock content %} 
 
-{% endblock content %} {% block scripts %}
+{% block scripts %}
 <script>
-  function selectModel(modelId) {
-    document.getElementById("model").value = modelId;
-  }
+  const jsonData = JSON.parse(document.getElementById("data_plot").textContent);
+  // console.log(jsonData);
+  var options = {
+    chart: {
+      height: 350,
+      type: "line",
+      stacked: false
+    },
+    dataLabels: {
+      enabled: false
+    },
+    colors: ["#247BA0", "#FF1654"],
+    series: [
+      {
+        name: "Actual",
+        data: jsonData.reject
+      },
+      {
+        name: "Prediksi",
+        data: jsonData.forecast
+      }
+    ],
+    stroke: {
+      width: [4, 4]
+    },
+    plotOptions: {
+      bar: {
+        columnWidth: "20%"
+      }
+    },
+    xaxis: {
+      categories: jsonData.label
+    },
+    yaxis: [
+      {
+        axisTicks: {
+          show: true
+        },
+      },
+    ],
+    tooltip: {
+      shared: false,
+      intersect: true,
+      x: {
+        show: false
+      }
+    },
+    legend: {
+      horizontalAlign: "left",
+      offsetX: 40
+    }
+  };
 
+  var chart = new ApexCharts(document.querySelector("#chartTest"), options);
+
+  chart.render();
 </script>
 {% endblock %}
